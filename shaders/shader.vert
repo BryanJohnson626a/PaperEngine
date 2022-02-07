@@ -2,7 +2,7 @@
 
 layout(binding = 0) uniform UniformBufferObject
 {
-    mat4 model;
+    mat4 model[100];
     mat4 view;
     mat4 projection;
 } ubo;
@@ -14,6 +14,6 @@ layout(location = 1) out vec2 frag_tex_coord;
 
 void main()
 {
-    gl_Position = ubo.projection * ubo.view * ubo.model * vec4(vertex_position, 1);
+    gl_Position = ubo.projection * ubo.view * ubo.model[gl_InstanceIndex] * vec4(vertex_position, 1);
     frag_tex_coord = vertex_tex_coord;
 }

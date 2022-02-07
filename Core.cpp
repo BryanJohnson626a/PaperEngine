@@ -13,15 +13,13 @@
 
 namespace Engine
 {
-	Graphics graphics;
-
 	int errors = 0;
 
 	void Initialize()
 	{
 		try
 		{
-			graphics.Initialize();
+			Graphics::Initialize();
 		}
 		catch (const std::exception & e)
 		{
@@ -37,7 +35,7 @@ namespace Engine
 
 		try
 		{
-			graphics.Update();
+			Graphics::Update();
 		}
 		catch (const std::exception & e)
 		{
@@ -46,14 +44,14 @@ namespace Engine
 			exit(EXIT_FAILURE);
 		}
 
-		return !glfwWindowShouldClose(graphics.GetWindow());
+		return !glfwWindowShouldClose(Graphics::GetWindow());
 	}
 
 	void Shutdown()
 	{
 		try
 		{
-			graphics.Shutdown();
+			Graphics::Shutdown();
 		}
 		catch (const std::exception & e)
 		{
