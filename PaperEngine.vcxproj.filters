@@ -18,22 +18,43 @@
     <Filter Include="Source Files\Engine\Graphics\Shaders">
       <UniqueIdentifier>{a26066db-e7e0-42d9-9c3f-b28ae4644dc7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Game">
+      <UniqueIdentifier>{1bb3a7b8-92e2-40ca-9560-d219612a5fdb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Engine\Components">
+      <UniqueIdentifier>{b7cee743-7a3f-4361-b9bd-a4412da7b7d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="Renderer.cpp">
       <Filter>Source Files\Engine\Graphics</Filter>
     </ClCompile>
     <ClCompile Include="Core.cpp">
       <Filter>Source Files\Engine</Filter>
     </ClCompile>
-    <ClCompile Include="Texture.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClCompile Include="Object.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\Game</Filter>
+    </ClCompile>
+    <ClCompile Include="Transform.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
     </ClCompile>
     <ClCompile Include="Sprite.cpp">
-      <Filter>Source Files\Engine\Graphics</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClCompile>
+    <ClCompile Include="Input.cpp">
+      <Filter>Source Files\Engine</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Random.cpp">
+      <Filter>Source Files\Engine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -46,11 +67,26 @@
     <ClInclude Include="stb_image.h">
       <Filter>Source Files\Engine\Graphics</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>Source Files\Engine\Graphics</Filter>
+    <ClInclude Include="Object.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Game.h">
+      <Filter>Source Files\Game</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Source Files\Engine\Components</Filter>
     </ClInclude>
     <ClInclude Include="Sprite.h">
-      <Filter>Source Files\Engine\Graphics</Filter>
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Source Files\Engine\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="Input.h">
+      <Filter>Source Files\Engine</Filter>
+    </ClInclude>
+    <ClInclude Include="Random.h">
+      <Filter>Source Files\Engine</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

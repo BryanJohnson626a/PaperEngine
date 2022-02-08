@@ -3,48 +3,44 @@
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include <glm/gtc/matrix_transform.hpp>
 
 namespace Engine
 {
-	std::vector<Texture> Texture::all_textures;
+	std::array<Texture, MAX_TEXTURES> all_textures;
+	int num_textures = 0;
 
-	TextureID Texture::AddTexture(std::string filename)
+	Texture * Texture::AddTexture(std::string filename, int images_x, int images_y)
 	{
-		if (all_textures.size() >= MAX_TEXTURES)
-			throw std::runtime_error("Max texture limit reached.");
+		Texture * texture = &all_textures[num_textures++];
 
-		all_textures.emplace_back(Texture());
+		texture->Load(filename);
+		texture->num_images_x = images_x;
+		texture->num_images_y = images_y;
 
-		Texture & new_texture = all_textures.back();
-
-		new_texture.Load(filename);
-		
-		return new_texture.id;
+		return texture;
 	}
 
-	Texture & Texture::GetTexture(TextureID id)
+	void Texture::LoadTextures()
 	{
-		return all_textures[id];
-	}
-
-	void Texture::RemoveTexture(TextureID id)
-	{
-		throw std::runtime_error("TODO");
+		AddTexture("assets/DawnLike/Characters/Player0.png", 8, 15);
+		AddTexture("assets/DawnLike/Characters/Undead0.png", 8, 10);
 	}
 
 	void Texture::UnloadTextures()
 	{
-		for (Texture & texture : all_textures)
-			texture.Unload();
+		for (int i = 0; i < num_textures; ++i)
+			all_textures[i].Unload();
 	}
 
-	int texture_id_counter = 0;
-	Texture::Texture() : id(texture_id_counter++)
-	{}
+	Texture * Texture::GetTexture(int index)
+	{
+		return &all_textures[index];
+	}
 
 	void Texture::Load(std::string filename)
 	{
-		int texture_width, texture_height, texture_channels;
+		int texture_channels;
 		stbi_uc * pixels = stbi_load(filename.c_str(), &texture_width, &texture_height, &texture_channels, STBI_rgb_alpha);
 		VkDeviceSize texture_size = texture_width * texture_height * texture_channels;
 
@@ -85,11 +81,22 @@ namespace Engine
 		vkDestroyImageView(Graphics::GetDevice(), image_view, nullptr);
 		vkDestroyImage(Graphics::GetDevice(), image, nullptr);
 		vkFreeMemory(Graphics::GetDevice(), image_memory, nullptr);
+		image_view = nullptr;
+		image = nullptr;
+		image_memory = nullptr;
 	}
 
-	glm::vec4 Texture::GetOffset(int sub_sprite_number) const
+	glm::mat3 Texture::GetOffset(int sub_sprite_number) const
 	{
-		return glm::vec4((float)sub_sprite_number);
+		glm::vec2 offset{ 1.f / num_images_x, 1.f / num_images_y };
+
+		glm::vec2 topleft{ offset.x * (sub_sprite_number % num_images_x),
+			offset.y * (sub_sprite_number / num_images_x)};
+
+		glm::mat3 transform{ {offset.x, 0, 0},
+							 {0, offset.y, 0},
+							 {topleft.x, topleft.y, 1} };
+		return transform;
 	}
 	VkImageView Texture::GetImageView() const
 	{

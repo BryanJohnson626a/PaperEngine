@@ -1,14 +1,13 @@
 #include "Core.h"
-#include "Sprite.h"
+#include "Game.h"
 
 int main()
 {
+	Engine::PostInitialization = GameInitialization;
+	Engine::PostUpdate = GameUpdate;
+	Engine::PreShutdown = GameShutdown;
+
 	Engine::Initialize();
-
-	auto p = Engine::Sprite::AddSprite();
-	p->SetPosition(glm::vec2(0, 0));
-
 	while (Engine::Update()) {}
-
 	Engine::Shutdown();
 }

@@ -3,36 +3,22 @@
 
 namespace Engine
 {
-	using SpriteID = int;
-
 	class Sprite
 	{
 	public:
-		static Sprite * AddSprite();
-		static void RemoveSprite(SpriteID id);
-		static void RemoveSprite(Sprite * sprite);
-		static Sprite * GetSprite(SpriteID id);
-		static std::vector<Sprite> & GetSprites();
-		static std::vector<int> & GetSpriteDepthOrder();
+		static Sprite * NewSprite();
+		static std::array<Sprite, MAX_SPRITES> & GetSprites();
+		static int GetNumSprites();
 
-		void SetPosition(glm::vec2 new_position);
-		const glm::vec2 GetPosition() const;
+		void SetTexture(Texture * new_texture);
+		Texture * GetTexture();
 
-		void SetSize(glm::vec2 new_size);
-		const glm::vec2 GetSize() const;
-
-		void SetRotation(float new_rotation);
-		const float GetRotation() const;
+		void SetSubsprite(int new_subsprite);
+		const int GetSubsprite() const;
+		const glm::mat3 GetTexOffset() const;
 	private:
-		Sprite();
-
-		static std::vector<Sprite> all_sprites;
-		static std::vector<int> depth_order;
-
-		SpriteID id;
-		Texture * texture;
-		glm::vec2 position;
-		float rotation_radians;
-		glm::vec2 size;
+		Texture * texture{};
+		int subsprite{};
+		glm::mat3 tex_offset{ 1 };
 	};
 }

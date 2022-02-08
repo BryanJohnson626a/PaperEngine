@@ -2,6 +2,7 @@
 #include <chrono>
 
 #include "Renderer.h"
+#include "Input.h"
 
 
 #ifdef _WIN32
@@ -15,11 +16,27 @@ namespace Engine
 {
 	int errors = 0;
 
+	float delta_time;
+
+	void(*PreInitialization)();
+	void(*PostInitialization)();
+	void(*PreUpdate)();
+	void(*PostUpdate)();
+	void(*PreShutdown)();
+	void(*PostShutdown)();
+
 	void Initialize()
 	{
 		try
 		{
+			if (PreInitialization)
+				PreInitialization();
+
 			Graphics::Initialize();
+			Input::Initialize();
+
+			if (PostInitialization != nullptr)
+				PostInitialization();
 		}
 		catch (const std::exception & e)
 		{
@@ -31,11 +48,20 @@ namespace Engine
 
 	bool Update()
 	{
-		glfwPollEvents();
+		static auto previous_time = std::chrono::high_resolution_clock::now();
+
+		auto current_time = std::chrono::high_resolution_clock::now();
+		delta_time = std::chrono::duration<float, std::chrono::seconds::period>(current_time - previous_time).count();
+		previous_time = current_time;
 
 		try
 		{
+			if (PreUpdate) PreUpdate();
+
+			Input::Update();
 			Graphics::Update();
+
+			if (PostUpdate) PostUpdate();
 		}
 		catch (const std::exception & e)
 		{
@@ -51,7 +77,12 @@ namespace Engine
 	{
 		try
 		{
+			if (PreShutdown) PreShutdown();
+
+			Input::Shutdown();
 			Graphics::Shutdown();
+
+			if (PostShutdown) PostShutdown();
 		}
 		catch (const std::exception & e)
 		{
@@ -75,5 +106,9 @@ namespace Engine
 	{
 		++errors;
 		std::cerr << message << "\n\n";
+	}
+	float GetDeltaTime()
+	{
+		return delta_time;
 	}
 }

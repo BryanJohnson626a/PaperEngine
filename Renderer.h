@@ -1,4 +1,5 @@
 #pragma once
+
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
@@ -10,8 +11,8 @@
 
 namespace Engine
 {
-	const uint32_t WIDTH = 800;
-	const uint32_t HEIGHT = 600;
+	const uint32_t WIDTH = 1280;
+	const uint32_t HEIGHT = 720;
 
 	namespace Graphics
 	{
@@ -51,13 +52,13 @@ namespace Engine
 		struct Camera
 		{
 			float zoom{ 1 };
-			glm::vec2 position{ 0,0 };
+			glm::vec2 offset{ 0,0 };
 		};
 
 		struct Vertex
 		{
 		public:
-			glm::vec3 position;
+			glm::vec3 offset;
 			glm::vec2 tex_coord;
 
 			static VkVertexInputBindingDescription GetBindingDescription()
@@ -77,7 +78,7 @@ namespace Engine
 				attribute_descriptions[0].binding = 0;
 				attribute_descriptions[0].location = 0;
 				attribute_descriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
-				attribute_descriptions[0].offset = offsetof(Vertex, position);
+				attribute_descriptions[0].offset = offsetof(Vertex, offset);
 
 				attribute_descriptions[1].binding = 0;
 				attribute_descriptions[1].location = 1;

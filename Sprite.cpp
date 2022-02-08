@@ -1,86 +1,52 @@
 #include "Sprite.h"
+#include "Texture.h"
 
 namespace Engine
 {
-	std::vector<Sprite> Sprite::all_sprites;
-	std::vector<int> Sprite::depth_order;
+	std::array<Sprite, MAX_SPRITES> all_sprites;
+	int num_sprites = 0;
 
-	int id_counter = 0;
-
-	Sprite::Sprite() :
-		id(id_counter++),
-		texture(nullptr),
-		position({ 0,0 }),
-		rotation_radians(0),
-		size({ 1,1 })
+	Sprite * Sprite::NewSprite()
 	{
+		Sprite * sprite = &all_sprites[num_sprites++];
+		sprite->texture = Texture::GetTexture(0);
+		sprite->SetSubsprite(0);
+		return sprite;
 	}
 
-	Sprite * Sprite::AddSprite()
-	{
-		if (all_sprites.size() >= MAX_SPRITES)
-			throw std::runtime_error("Max sprite limit reached.");
-
-		all_sprites.emplace_back(Sprite());
-		return &all_sprites.back();
-	}
-
-	void Sprite::RemoveSprite(SpriteID /*id*/)
-	{
-		throw "Not Implemented.";
-	}
-
-	void Sprite::RemoveSprite(Sprite * sprite)
-	{
-		RemoveSprite(sprite->id);
-	}
-
-	Sprite * Sprite::GetSprite(SpriteID id)
-	{
-		for (auto & sprite : all_sprites)
-			if (sprite.id == id)
-				return &sprite;
-
-		throw std::invalid_argument(std::format("No sprite with ID {}.", id));
-	}
-
-	std::vector<Sprite> & Sprite::GetSprites()
+	std::array<Sprite, MAX_SPRITES> & Sprite::GetSprites()
 	{
 		return all_sprites;
 	}
 
-	std::vector<int> & Sprite::GetSpriteDepthOrder()
+	int Sprite::GetNumSprites()
 	{
-		return depth_order;
+		return num_sprites;
 	}
 
-	void Sprite::SetPosition(glm::vec2 new_position)
+	void Engine::Sprite::SetTexture(Texture * new_texture)
 	{
-		position = new_position;
+		texture = new_texture;
 	}
 
-	const glm::vec2 Sprite::GetPosition() const
+	Texture * Sprite::GetTexture()
 	{
-		return position;
+		return texture;
 	}
 
-	void Sprite::SetSize(glm::vec2 new_size)
+	void Sprite::SetSubsprite(int new_subsprite)
 	{
-		size = new_size;
+		subsprite = new_subsprite;
+		tex_offset = texture->GetOffset(subsprite);
 	}
 
-	const glm::vec2 Engine::Sprite::GetSize() const
+	const int Sprite::GetSubsprite() const
 	{
-		return size;
+		return subsprite;
 	}
 
-	void Engine::Sprite::SetRotation(float new_rotation)
+	const glm::mat3 Sprite::GetTexOffset() const
 	{
-		rotation_radians = new_rotation;
-	}
-
-	const float Sprite::GetRotation() const
-	{
-		return rotation_radians;
+		return tex_offset;
 	}
 }

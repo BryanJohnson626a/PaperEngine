@@ -1,6 +1,8 @@
 #include "Renderer.h"
 #include "Texture.h"
 #include "Sprite.h"
+#include "Transform.h"
+#include "Object.h"
 
 #include <glm/gtc/matrix_transform.hpp>
 
@@ -72,8 +74,6 @@ namespace Engine
 
 		static bool framebuffer_resized;
 
-		std::vector<Texture> textures;
-
 		const std::vector<Vertex> vertices
 		{
 			{ { -.5f, -.5f, 0 }, { 1, 0 } },
@@ -90,10 +90,11 @@ namespace Engine
 
 		struct UniformBufferObject
 		{
-			glm::mat4 model[MAX_SPRITES];
+			glm::mat4 model[MAX_OBJECTS];
+			glm::mat3 tex_offset[MAX_OBJECTS];
 			glm::mat4 view;
 			glm::mat4 projection;
-		};
+		} ubo{};
 
 		void Initialize()
 		{
@@ -111,7 +112,7 @@ namespace Engine
 			CreateCommandPool();
 			CreateDepthResources();
 			CreateFramebuffers();
-			LoadTextures();
+			Texture::LoadTextures();
 			CreateTextureSampler();
 			CreateVertexBuffer();
 			CreateIndexBuffer();
@@ -773,7 +774,6 @@ namespace Engine
 
 		void LoadTextures()
 		{
-			Texture::AddTexture("assets/DawnLike/Characters/Player0.png");
 		}
 
 		void CreateCommandPool()
@@ -928,7 +928,7 @@ namespace Engine
 
 				VkDescriptorImageInfo image_info{};
 				image_info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-				image_info.imageView = Texture::GetTexture(0).GetImageView();
+				image_info.imageView = Texture::GetTexture(0)->GetImageView();
 				image_info.sampler = texture_sampler;
 
 				std::array<VkWriteDescriptorSet, 2> descriptor_writes{};
@@ -1048,23 +1048,29 @@ namespace Engine
 		{
 			float aspect = float(WindowSize().x) / float(WindowSize().y);
 
-			auto sprites = Sprite::GetSprites();
+			auto objects = Object::GetObjects();
+			int num_objects = Object::GetNumObjects();
 
-			UniformBufferObject ubo{};
-			for (int i = 0; i < sprites.size(); ++i)
+			for (int i = 0; i < num_objects; ++i)
 			{
+				auto transform = objects[i].transform;
+				auto sprite = objects[i].sprite;
+
 				ubo.model[i] = glm::mat4(1);
-				ubo.model[i] = glm::translate(ubo.model[i], glm::vec3(-sprites[i].GetPosition(), 0));
-				ubo.model[i] = glm::rotate(ubo.model[i], sprites[i].GetRotation(), glm::vec3(0, 0, 1));
-				ubo.model[i] = glm::scale(ubo.model[i], glm::vec3(sprites[i].GetSize(), 1));
+				ubo.model[i] = glm::translate(ubo.model[i], glm::vec3(-transform->GetPosition(), 0));
+				ubo.model[i] = glm::rotate(ubo.model[i],transform->GetRotation(), glm::vec3(0, 0, 1));
+				ubo.model[i] = glm::scale(ubo.model[i], glm::vec3(transform->GetSize(), 1));
+
+				ubo.tex_offset[i] = sprite->GetTexOffset();
 			}
-			for (int i = int(sprites.size()); i < MAX_SPRITES; ++i)
+			for (int i = num_objects; i < MAX_OBJECTS; ++i)
 			{
 				ubo.model[i] = glm::mat4(0);
+				ubo.tex_offset[i] = glm::mat3(0);
 			}
 
-			ubo.view = glm::lookAt(glm::vec3(0, 1, 2), glm::vec3(0, 0, 0), glm::vec3(0, 0, 1));
-			ubo.projection = glm::perspective(glm::radians(45.f), aspect, 0.1f, 10.f);
+			ubo.view = glm::lookAt(glm::vec3(0, 0, 10), glm::vec3(0, 0, 0), glm::vec3(0, -1, 0));
+			ubo.projection = glm::perspective(glm::radians(45.f), aspect, 0.1f, 20.f);
 			ubo.projection[1][1] *= -1; // Unflip Y for vulkan compatability.
 
 			void * data;
